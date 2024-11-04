@@ -15,6 +15,11 @@ import { newsLetterCron } from "./automation/newsLetterCron.js";
 const app = express();
 config({ path: "./config/config.env" });
 
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "script-src 'self' 'sha256-5+YTmTcBwCYdJ8Jetbr6kyjGp0Ry/H7ptpoun6CrSwQ='");
+  next();
+});
+
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL],
