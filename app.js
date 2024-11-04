@@ -6,19 +6,13 @@ import { connection } from "./database/connection.js";
 import { errorMiddleware } from "./middlewares/error.js";
 import fileUpload from "express-fileupload";
 import userRouter from "./routes/userRouter.js";
-import jobRouter from './routes/jobRouter.js';
-import applicationRouter from './routes/applicationRouter.js'
+import jobRouter from "./routes/jobRouter.js";
+import applicationRouter from "./routes/applicationRouter.js";
 import { newsLetterCron } from "./automation/newsLetterCron.js";
-
 
 
 const app = express();
 config({ path: "./config/config.env" });
-
-app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "script-src 'self' 'sha256-5+YTmTcBwCYdJ8Jetbr6kyjGp0Ry/H7ptpoun6CrSwQ='");
-  next();
-});
 
 app.use(
   cors({
@@ -43,10 +37,8 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/job", jobRouter);
 app.use("/api/v1/application", applicationRouter);
 
-newsLetterCron();
-
+newsLetterCron()
 connection();
-
 app.use(errorMiddleware);
 
 export default app;

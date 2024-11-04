@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
-import { type } from "os";
 import validator from "validator";
-
 const applicationSchema = new mongoose.Schema({
   jobSeekerInfo: {
     id: {
@@ -15,11 +13,7 @@ const applicationSchema = new mongoose.Schema({
     email: {
       type: String,
       required: true,
-      validate: [validator.isEmail, "Please Provide a valid enail"],
-    },
-    email: {
-      type: String,
-      required: true,
+      validate: [validator.isEmail, "Please provide a valid email."],
     },
     phone: {
       type: Number,
@@ -43,12 +37,11 @@ const applicationSchema = new mongoose.Schema({
       required: true,
     },
   },
-
   employerInfo: {
     id: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
       ref: "User",
+      required: true,
     },
     role: {
       type: String,
@@ -57,7 +50,7 @@ const applicationSchema = new mongoose.Schema({
     },
   },
   jobInfo: {
-    id: {
+    jobId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },

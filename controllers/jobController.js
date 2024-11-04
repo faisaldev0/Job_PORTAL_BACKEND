@@ -2,7 +2,6 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/error.js";
 import { Job } from "../models/jobSchema.js";
 
-// To post a job
 export const postJob = catchAsyncErrors(async (req, res, next) => {
   const {
     title,
@@ -69,7 +68,6 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// To get All the jobs
 export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
   const { city, niche, searchKeyword } = req.query;
   const query = {};
@@ -94,7 +92,6 @@ export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// To get all my posted jobs
 export const getMyJobs = catchAsyncErrors(async (req, res, next) => {
   const myJobs = await Job.find({ postedBy: req.user._id });
   res.status(200).json({
@@ -102,24 +99,25 @@ export const getMyJobs = catchAsyncErrors(async (req, res, next) => {
     myJobs,
   });
 });
-// To delete a job
+
 export const deleteJob = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
   const job = await Job.findById(id);
   if (!job) {
-    return next(new ErrorHandler("Job not found", 404));
+    return next(new ErrorHandler("Oops! Job not found.", 404));
   }
   await job.deleteOne();
   res.status(200).json({
     success: true,
-    message: "Job Deleted",
+    message: "Job deleted.",
   });
 });
+
 export const getASingleJob = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
   const job = await Job.findById(id);
   if (!job) {
-    return next(new ErrorHandler("Job not found", 404));
+    return next(new ErrorHandler("Job not found.", 404));
   }
   res.status(200).json({
     success: true,
