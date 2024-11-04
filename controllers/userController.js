@@ -86,21 +86,21 @@ export const login = catchAsyncErrors(async (req, res, next) => {
   const { role, email, password } = req.body;
   if (!role || !email || !password) {
     return next(
-      new ErrorHandler("Email, password and role are required.", 400)
+      new ErrorHandler("Email, Password and Role are required.", 400)
     );
   }
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
-    return next(new ErrorHandler("Invalid email or password.", 400));
+    return next(new ErrorHandler("Invalid Email or Password.", 400));
   }
   const isPasswordMatched = await user.comparePassword(password);
   if (!isPasswordMatched) {
-    return next(new ErrorHandler("Invalid email or password.", 400));
+    return next(new ErrorHandler("Invalid Email or Password.", 400));
   }
   if (user.role !== role) {
-    return next(new ErrorHandler("Invalid user role.", 400));
+    return next(new ErrorHandler("Invalid Role.", 400));
   }
-  sendToken(user, 200, res, "User logged in successfully.");
+  sendToken(user, 200, res, "Logged In");
 });
 
 // Logout Functionality
@@ -110,8 +110,6 @@ export const logout = catchAsyncErrors(async (req, res, next) => {
     .cookie("token", "", {
       expires: new Date(Date.now()),
       httpOnly: true,
-      secure: true,
-      sameSite: 'None',
     })
     .json({
       success: true,
@@ -121,6 +119,7 @@ export const logout = catchAsyncErrors(async (req, res, next) => {
 
 // To get Users Details
 export const getUser = catchAsyncErrors(async (req, res, next) => {
+  console.log("Incoming request user:", req.user);
   const user = req.user;
   res.status(200).json({
     success: true,
