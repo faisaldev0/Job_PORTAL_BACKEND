@@ -21,6 +21,7 @@ app.use(
     credentials: true,
   })
 );
+console.log(process.env.FRONTEND_URL);
 
 app.use(cookieParser());
 app.use(express.json());
