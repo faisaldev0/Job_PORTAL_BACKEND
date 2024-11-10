@@ -16,7 +16,7 @@ config({ path: "./config/config.env" });
 
 app.use(
   cors({
-    origin: "https://nexthire.netlify.app",
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
