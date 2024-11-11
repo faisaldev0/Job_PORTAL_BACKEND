@@ -20,17 +20,16 @@ export const register = catchAsyncErrors(async (req, res, next) => {
     } = req.body;
 
     if (!name || !email || !phone || !address || !password || !role) {
-      return next(new ErrorHandler("All fileds are required.", 400));
+      return next(new ErrorHandler("All fields are required.", 400));
     }
     if (role === "Job Seeker" && (!firstNiche || !secondNiche || !thirdNiche)) {
-      return next(
-        new ErrorHandler("Please provide your preferred job niches.", 400)
-      );
+      return next(new ErrorHandler("Please provide your preferred job niches.", 400));
     }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return next(new ErrorHandler("Email is already registered.", 400));
     }
+
     const userData = {
       name,
       email,
@@ -45,18 +44,16 @@ export const register = catchAsyncErrors(async (req, res, next) => {
       },
       coverLetter,
     };
+
     if (req.files && req.files.resume) {
       const { resume } = req.files;
       if (resume) {
         try {
-          const cloudinaryResponse = await cloudinary.uploader.upload(
-            resume.tempFilePath,
-            { folder: "Job_Seekers_Resume" }
-          );
+          const cloudinaryResponse = await cloudinary.uploader.upload(resume.tempFilePath, {
+            folder: "Job_Seekers_Resume",
+          });
           if (!cloudinaryResponse || cloudinaryResponse.error) {
-            return next(
-              new ErrorHandler("Failed to upload resume to cloud.", 500)
-            );
+            return next(new ErrorHandler("Failed to upload resume to cloud.", 500));
           }
           userData.resume = {
             public_id: cloudinaryResponse.public_id,
@@ -67,6 +64,7 @@ export const register = catchAsyncErrors(async (req, res, next) => {
         }
       }
     }
+
     const user = await User.create(userData);
     sendToken(user, 201, res, "User Registered.");
   } catch (error) {
@@ -76,23 +74,26 @@ export const register = catchAsyncErrors(async (req, res, next) => {
 
 export const login = catchAsyncErrors(async (req, res, next) => {
   const { role, email, password } = req.body;
+
   if (!role || !email || !password) {
-    return next(
-      new ErrorHandler("Email, password and role are required.", 400)
-    );
+    return next(new ErrorHandler("Email, password, and role are required.", 400));
   }
+
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
     return next(new ErrorHandler("Invalid email or password.", 400));
   }
+
   const isPasswordMatched = await user.comparePassword(password);
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Invalid email or password.", 400));
   }
+
   if (user.role !== role) {
     return next(new ErrorHandler("Invalid user role.", 400));
   }
-  sendToken(user, 200, res, "User logged in successfully.");
+
+  sendToken(user, 200, res, "User logged in successfully.", { sameSite: "None", secure: true });
 });
 
 export const logout = catchAsyncErrors(async (req, res, next) => {
@@ -137,10 +138,9 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     req.user.role === "Job Seeker" &&
     (!firstNiche || !secondNiche || !thirdNiche)
   ) {
-    return next(
-      new ErrorHandler("Please provide your all preferred job niches.", 400)
-    );
+    return next(new ErrorHandler("Please provide your all preferred job niches.", 400));
   }
+
   if (req.files) {
     const resume = req.files.resume;
     if (resume) {
@@ -174,18 +174,16 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user.id).select("+password");
 
   const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
-
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Old password is incorrect.", 400));
   }
 
   if (req.body.newPassword !== req.body.confirmPassword) {
-    return next(
-      new ErrorHandler("New password & confirm password do not match.", 400)
-    );
+    return next(new ErrorHandler("New password & confirm password do not match.", 400));
   }
 
   user.password = req.body.newPassword;
   await user.save();
-  sendToken(user, 200, res, "Password updated successfully.");
+
+  sendToken(user, 200, res, "Password updated successfully.", { sameSite: "None", secure: true });
 });
