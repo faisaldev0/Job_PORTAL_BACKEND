@@ -16,13 +16,13 @@ config({ path: "./config/config.env" });
 
 app.use(
   cors({
-    origin: "*",
+    origin: [process.env.FRONTEND_URL, "https://nexthire.netlify.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
-// app.use(cors())
-console.log("CORSUrl : " + [process.env.FRONTEND_URL, "https://nexthire.netlify.app"]);
+
+
 
 app.use(cookieParser());
 app.use(express.json());
